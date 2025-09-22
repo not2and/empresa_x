@@ -8,7 +8,7 @@ require 'conexao.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empresa X - Sistema de RH Avançado</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="estilo/style.css">
 </head>
 <body>
 
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const formData = new FormData(this);
         
-        const res = await fetch('actions/cadastrar_departamento.php', {
+        const res = await fetch('acoes/cadastrar_departamento.php', {
             method: 'POST',
             body: formData
         });
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const formData = new FormData(this);
         
-        const res = await fetch('actions/cadastrar_funcionario.php', {
+        const res = await fetch('acoes/cadastrar_funcionario.php', {
             method: 'POST',
             body: formData
         });
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!confirm('Tem certeza que deseja excluir este funcionário?')) return;
             
             const id = this.dataset.id;
-            const res = await fetch('actions/excluir_funcionario.php', {
+            const res = await fetch('acoes/excluir_funcionario.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + encodeURIComponent(id)
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!confirm('Tem certeza? Isso só é permitido se não houver funcionários vinculados.')) return;
             
             const id = this.dataset.id;
-            const res = await fetch('actions/excluir_departamento.php', {
+            const res = await fetch('acoes/excluir_departamento.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + encodeURIComponent(id)
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = this.dataset.id;
 
             try {
-                const res = await fetch(`actions/buscar_funcionario.php?id=${id}`);
+                const res = await fetch(`acoes/buscar_funcionario.php?id=${id}`);
                 const func = await res.json();
 
                 if (!func || !func.id_funcionario) {
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const res = await fetch(`actions/buscar_funcionario.php?id=${id}`);
+            const res = await fetch(`acoes/buscar_funcionario.php?id=${id}`);
             const func = await res.json();
 
             if (!func || !func.id_funcionario) {
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const formData = new FormData(this);
         
-        const res = await fetch('actions/atualizar_funcionario.php', {
+        const res = await fetch('acoes/atualizar_funcionario.php', {
             method: 'POST',
             body: formData
         });
