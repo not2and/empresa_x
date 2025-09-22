@@ -206,6 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
     const toast = document.getElementById('toast');
+    const resultadoEdicao = document.getElementById('resultado-edicao');
+    const formBusca = document.getElementById('form-busca');
+    const formEdicao = document.getElementById('form-edicao');
+    const cancelarEdicaoBtn = document.getElementById('cancelar-edicao');
 
     // Função para mostrar toast
     function showToast(message, type = 'success') {
@@ -240,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast(result.message, result.status);
         if (result.status === 'success') {
             this.reset();
-            location.reload(); // atualiza lista
+            location.reload();
         }
     });
 
@@ -302,11 +306,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Edição - Busca
-    document.getElementById('form-busca')?.addEventListener('submit', async function(e) {
+    // ✅ NOVO: Editar ao clicar no botão da lista
+    document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const id = this.dataset.id;
+
+            try {
+                const res = await fetch(`actions/buscar_funcionario.php?id=${id}`);
+                const func = await res.json();
+
+                if (!func || !func.id_funcionario) {
+                    showToast('Funcionário não encontrado.', 'error');
+                    return;
+                }
+
+                // Preenche o formulário de edição
+                document.getElementById('edit-id').value = func.id_funcionario;
+                document.getElementById('edit-nome').value = func.nome;
+                document.getElementById('edit-afastado').value = func.afastado;
+                document.getElementById('edit-depto').value = func.id_departamento;
+                document.getElementById('edit-nome-titulo').textContent = func.nome;
+
+                // Mostra o formulário
+                resultadoEdicao.style.display = 'block';
+
+                // Muda para a aba "Gerenciar"
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.querySelector('.tab[data-tab="gerenciar"]').classList.add('active');
+                document.getElementById('gerenciar').classList.add('active');
+
+                // Scroll suave até o formulário
+                resultadoEdicao.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                showToast('Erro ao carregar dados do funcionário.', 'error');
+            }
+        });
+    });
+
+    // Buscar funcionário por ID (manualmente)
+    formBusca?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const id = document.getElementById('busca-id').value;
-        if (!id) return showToast('Informe um ID válido.', 'warning');
+        if (!id) {
+            showToast('Informe um ID válido.', 'warning');
+            return;
+        }
 
         try {
             const res = await fetch(`actions/buscar_funcionario.php?id=${id}`);
@@ -314,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!func || !func.id_funcionario) {
                 showToast('Funcionário não encontrado.', 'error');
+                resultadoEdicao.style.display = 'none';
                 return;
             }
 
@@ -322,20 +368,20 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit-afastado').value = func.afastado;
             document.getElementById('edit-depto').value = func.id_departamento;
             document.getElementById('edit-nome-titulo').textContent = func.nome;
-            document.getElementById('resultado-edicao').style.display = 'block';
+            resultadoEdicao.style.display = 'block';
         } catch (err) {
             showToast('Erro ao buscar funcionário.', 'error');
         }
     });
 
     // Cancelar edição
-    document.getElementById('cancelar-edicao')?.addEventListener('click', function() {
-        document.getElementById('resultado-edicao').style.display = 'none';
-        document.getElementById('form-busca').reset();
+    cancelarEdicaoBtn?.addEventListener('click', function() {
+        resultadoEdicao.style.display = 'none';
+        formBusca?.reset();
     });
 
     // Atualizar funcionário
-    document.getElementById('form-edicao')?.addEventListener('submit', async function(e) {
+    formEdicao?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const formData = new FormData(this);
         
